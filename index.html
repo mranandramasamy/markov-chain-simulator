@@ -1,0 +1,81 @@
+<html>
+	<head>
+		<title>
+			Markov Chain Simulator
+		</title>
+		<style>
+			* {
+				font-family: sans-serif;
+			}
+		</style>
+	</head>
+	<body>
+		<center>
+			<br/><br/><br/>
+			<button onclick="simulate('Eat', 10)">Simulate</button>
+		</center>
+	</body>
+	<script>
+		var matrix = {
+			"Eat": {
+				"Walk":0.7, "Scroll youtube": 0.3
+			},
+			"Walk": {
+				"Eat": 0.4, "Scroll youtube": 0.2, "Watch movies": 0.2, "Learn": 0.2
+			},
+			"Scroll youtube": {
+				"Eat": 0.3, "Walk": 0.2, "Learn": 0.1, "Scroll youtube": 0.2, "Go out": 0.2
+			},
+			"Watch movies": {
+				"Eat": 0.3, "Learn": 0.3, "Walk": 0.3, "Go out": 0.1
+			},
+			"Learn": {
+				"Eat": 0.3, "Walk": 0.3, "Scroll youtube": 0.3, "Watch movies": 0.1
+			},
+			"Go out": {
+				"Eat": 0.4, "Scroll youtube": 0.3, "Watch movies": 0.3
+			}
+		}
+		function simulate(startFrom, noOfSteps) {
+			console.log("Simulating");
+			var result = {}
+			for (key in matrix) {
+				result[key] = 0;
+			}
+			result[startFrom] = 1;
+			var parsedMatrix = prepareMatrix(matrix);
+			console.log(parsedMatrix);
+			var currentState = startFrom;
+			for (step=0; step<noOfSteps; step++) {
+				let newIndex = findRandomIndex(parsedMatrix[currentState].length);
+				let newState = parsedMatrix[currentState][newIndex];
+				result[newState] = result[newState]+1;
+				currentState = newState;
+			}
+			for (key in matrix) {
+				console.log(key, ":", Math.round((result[key]/noOfSteps)*100, 2), "%");
+			}
+		}
+		function prepareMatrix(matrix) {
+			var parsedMatrix = {};
+			for (key in matrix) {
+				parsedMatrix[key] = [];
+				for (element in matrix[key]) {
+					var noOfTimes = Math.floor(matrix[key][element]*10);
+					for (_=0; _<noOfTimes; _++) {
+						parsedMatrix[key].push(element);
+					}					
+				}
+			}
+			return parsedMatrix;
+		}
+		function findRandomIndex(outOf) {
+			return Math.floor(Math.random(outOf)*10);
+		}
+		function initiate() {
+			console.log("App started");
+			simulate('Walk', 10000);
+		}
+		initiate();
+	</script>
+</html>
